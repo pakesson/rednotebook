@@ -204,7 +204,7 @@ STDIN = STDOUT = '-'
 MODULEIN = MODULEOUT = '-module-'
 ESCCHAR   = '\x00'
 SEPARATOR = '\x01'
-LISTNAMES = {'-':'list', '+':'numlist', ':':'deflist'}
+LISTNAMES = {'-':'list', '*':'list', '+':'numlist', ':':'deflist'}
 LINEBREAK = {'default':'\n', 'win':'\r\n', 'mac':'\r'}
 
 # Platform specific settings
@@ -1866,13 +1866,13 @@ def getRegexes():
 	'fontStrike':
 		re.compile(  r'--([^\s](|.*?[^\s])-*)--'),
 	'list':
-		re.compile(r'^( *)(-) (?=[^ ])'),
+		re.compile(r'^( *)([-\*]) (?=[^ ])'),
 	'numlist':
 		re.compile(r'^( *)(\+) (?=[^ ])'),
 	'deflist':
 		re.compile(r'^( *)(:) (.*)$'),
 	'listclose':
-		re.compile(r'^( *)([-+:])\s*$'),
+		re.compile(r'^( *)([-+:\*])\s*$'),
 	'bar':
 		re.compile(r'^(\s*)([_=-]{20,})\s*$'),
 	'table':

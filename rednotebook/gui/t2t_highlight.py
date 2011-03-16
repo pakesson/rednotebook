@@ -314,7 +314,7 @@ def get_pattern(char, style):
     return Pattern(regex, group_style_pairs, name=style)
 
 
-list    = Pattern(r"^ *(\-) [^ ].*$", [(1, 'red'), (1, 'bold')], name='list')
+list    = Pattern(r"^ *([\-\*]) [^ ].*$", [(1, 'red'), (1, 'bold')], name='list')
 numlist = Pattern(r"^ *(\+) [^ ].*$", [(1, 'red'), (1, 'bold')], name='numlist')
 
 comment = Pattern(r'^(\%.*)$', [(1, 'gray')])
