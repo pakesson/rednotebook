@@ -220,6 +220,58 @@ class FontSizeOption(ComboBoxOption):
             return -1
 
 
+class FontOption(Option):
+    def __init__(self, text, name):
+        Option.__init__(self, text, name, '')
+
+        self.font_dialog = None
+
+        self.font_name = Option.config.read(name, '')
+
+        self.label = gtk.Label()
+        self.label.set_text(self.font_name)
+
+        self.button = gtk.Button(_('Choose font...'))
+        self.button.connect('clicked', self.on_button_clicked)
+
+        self.pack_start(self.button, False)
+        self.pack_start(self.label, False)
+
+    def on_button_clicked(self, widget):
+        if not self.font_dialog:
+            window = gtk.FontSelectionDialog(_("Font Selection Dialog"))
+            self.font_dialog = window
+
+            window.set_font_name(self.font_name)
+            window.set_modal(True)
+            window.set_transient_for(self.main_window.main_frame)
+            window.set_position(gtk.WIN_POS_MOUSE)
+            window.connect("destroy", self.font_dialog_destroyed)
+            window.ok_button.connect("clicked",
+                                     self.font_selection_ok)
+            window.cancel_button.connect_object("clicked",
+                                                lambda wid: wid.destroy(),
+                                                self.font_dialog)
+        window = self.font_dialog
+
+        if not (window.flags() & gtk.VISIBLE):
+            window.show()
+        else:
+            window.destroy()
+            self.font_dialog = None
+
+    def font_dialog_destroyed(self, widget):
+        self.font_dialog = None
+
+    def font_selection_ok(self, widget):
+        self.font_name = self.font_dialog.get_font_name()
+        self.label.set_text(self.font_name)
+        Option.main_window.set_font(self.font_name)
+        self.font_dialog.destroy()
+
+    def get_value(self):
+        return self.font_name
+
 #class SpinOption(LabelAndWidgetOption):
 #   def __init__(self, text, name):
 #
@@ -317,6 +369,7 @@ class OptionsManager(object):
 
         self.options.extend([
                 FontSizeOption(_('Font Size'), 'mainFontSize'),
+                FontOption(_('Font'), 'mainFont'),
                 DateFormatOption(_('Date/Time format'), 'dateTimeString'),
                 CsvTextOption(_('Exclude from clouds'), 'cloudIgnoreList',
                                 tooltip=_('Do not show those comma separated words in any cloud')),
@@ -344,6 +397,7 @@ class OptionsManager(object):
         else:
             # Reset some options
             self.main_window.set_font_size(self.config.read('mainFontSize', -1))
+            self.main_window.set_font(self.config.read('mainFont', "Monospace 10"))
 
         self.dialog.hide()
 

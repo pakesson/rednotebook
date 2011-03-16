@@ -661,8 +661,10 @@ class MainWindow(object):
 
         # A font size of -1 applies the standard font size
         main_font_size = config.read('mainFontSize', -1)
-
         self.set_font_size(main_font_size)
+
+        main_font = self.journal.config.read('mainFont', 'Monospace 10')
+        self.set_font(main_font)
 
     def set_font_size(self, main_font_size):
         # -1 sets the default font size on Linux
@@ -673,6 +675,9 @@ class MainWindow(object):
         self.day_text_field.set_font_size(main_font_size)
         self.html_editor.set_font_size(main_font_size)
 
+    def set_font(self, font_name):
+        self.day_text_field.set_font(font_name)
+        self.html_editor.set_font_size(pango.FontDescription(font_name).get_size() / pango.SCALE)
 
     def setup_template_menu(self):
         self.template_menu_button = self.builder.get_object('template_menu_button')
@@ -1591,6 +1596,10 @@ class DayTextField(object):
 
     def set_font_size(self, size):
         font = pango.FontDescription(str(size))
+        self.day_text_view.modify_font(font)
+
+    def set_font(self, font_name):
+        font = pango.FontDescription(font_name)
         self.day_text_view.modify_font(font)
 
     def hide(self):
